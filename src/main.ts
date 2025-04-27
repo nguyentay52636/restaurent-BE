@@ -8,9 +8,7 @@ import { SnakeToCamelPipe } from 'src/utils/pipe/snake-to-came.pipe';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: 'http://localhost:3000',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    origin: '*',
   });
   app.useGlobalPipes(
     new SnakeToCamelPipe(),

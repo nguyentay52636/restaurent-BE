@@ -18,6 +18,7 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { ProductSizesModule } from './product-sizes/product-sizes.module';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ProductSizesModule } from './product-sizes/product-sizes.module';
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
+        namingStrategy: new SnakeNamingStrategy(),
       }),
     }),
     JwtModule.registerAsync({
