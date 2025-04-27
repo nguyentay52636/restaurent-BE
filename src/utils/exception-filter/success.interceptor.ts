@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import snakecaseKeys from 'snakecase-keys';
 import { instanceToPlain } from 'class-transformer';
 
 // function toSnakeCase(obj: any): any {
@@ -39,9 +38,9 @@ export class SuccessInterceptor implements NestInterceptor {
         console.log('Data after plain:', plainData);
 
         return {
-          status_code: 200,
+          status_code: 201,
           message: 'Success',
-          data: snakecaseKeys(plainData, { deep: true }),
+          data: plainData,
         };
       }),
     );
