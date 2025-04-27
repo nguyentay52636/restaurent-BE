@@ -38,7 +38,7 @@ export class SuccessInterceptor implements NestInterceptor {
         console.log('Data after plain:', plainData);
 
         return {
-          status_code: 201,
+          statusCode: 200,
           message: 'Success',
           data: plainData,
         };
