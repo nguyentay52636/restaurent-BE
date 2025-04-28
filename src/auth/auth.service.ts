@@ -40,21 +40,25 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.usersService.findByEmail(loginDto.email);
     if (!user) {
-      throw new ForbiddenException('User not found');
+      throw new ForbiddenException('Email không tồn tại.');
     }
 
-    const passwordIsValid = compareSync(loginDto.password, user.password);
-    if (!passwordIsValid) {
-      throw new ForbiddenException('Invalid password');
+    const isPasswordValid = compareSync(loginDto.password, user.password);
+    if (!isPasswordValid) {
+      throw new ForbiddenException('Mật khẩu không đúng.');
     }
 
     const payload: JwtPayload = { email: user.email, sub: user.id };
 
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+
     return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: this.jwtService.sign(payload, {
-        expiresIn: '30d',
+      user: plainToClass(ProfileResponse, user, {
+        excludeExtraneousValues: true,
       }),
+      access_token: accessToken,
+      refresh_token: refreshToken,
     };
   }
 
@@ -63,7 +67,7 @@ export class AuthService {
 
     const hashedPassword = await hash(registerDto.password, 10);
     const user = await this.usersService.create({
-      email: registerDto.email,
+      ...registerDto,
       password: hashedPassword,
     });
 
