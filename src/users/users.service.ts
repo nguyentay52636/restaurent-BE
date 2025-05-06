@@ -4,16 +4,31 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+
+    private readonly roleService: RolesService,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    const user = this.userRepo.create(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const roles = await this.roleService.findAll();
+
+    const userRole = roles.find((item) => item.name === 'user');
+    if (!userRole) {
+      throw new Error('Default role "user" not found');
+    }
+
+    const user = this.userRepo.create({
+      ...createUserDto,
+      roleId: userRole.id,
+    });
+    console.log('User created:', user);
+
     return this.userRepo.save(user);
   }
 
