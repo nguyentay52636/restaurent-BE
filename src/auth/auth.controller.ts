@@ -5,6 +5,8 @@ import {
   UseGuards,
   Request,
   Get,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -23,8 +25,13 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto): Promise<ProfileResponse> {
-    return this.authService.register(registerDto);
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() registerDto: RegisterDto) {
+    const user = await this.authService.register(registerDto);
+    return {
+      message: 'User registered successfully',
+      data: user
+    };
   }
 
   @Post('refresh')
