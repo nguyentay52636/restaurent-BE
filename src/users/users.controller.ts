@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  HttpException,
+  HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,11 +17,27 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+  
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
+    try {
+      this.logger.log(`Creating user with data: ${JSON.stringify(createUserDto)}`);
+      return await this.usersService.create(createUserDto);
+    } catch (error) {
+      this.logger.error(`Failed to create user: ${error.message}`, error.stack);
+      
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message || 'Failed to create user',
+          error: 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @Get()
