@@ -6,11 +6,7 @@ export class CustomNamingStrategy extends DefaultNamingStrategy {
     return userSpecifiedName || snakeCase(targetName);
   }
 
-  columnName(
-    propertyName: string,
-    customName: string,
-    embeddedPrefixes: string[],
-  ): string {
+  columnName(propertyName: string, customName: string): string {
     return customName || snakeCase(propertyName);
   }
 
@@ -22,11 +18,7 @@ export class CustomNamingStrategy extends DefaultNamingStrategy {
     return snakeCase(relationName + '_' + referencedColumnName);
   }
 
-  joinTableName(
-    firstTableName: string,
-    secondTableName: string,
-    firstPropertyName: string,
-  ): string {
+  joinTableName(firstTableName: string, secondTableName: string): string {
     return snakeCase(firstTableName + '_' + secondTableName);
   }
 

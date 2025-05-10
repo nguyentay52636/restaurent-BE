@@ -33,7 +33,11 @@ export class ProductsService {
     };
   }
 
-  async create(dto: CreateProductDto): Promise<ProductResponseDto> {
+  async create(
+    dto: CreateProductDto,
+    file: Express.Multer.File,
+  ): Promise<ProductResponseDto> {
+    console.log(file);
     const category = dto.categoryId
       ? await this.categoryRepository.findOne({ where: { id: dto.categoryId } })
       : null;

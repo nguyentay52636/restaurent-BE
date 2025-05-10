@@ -32,6 +32,8 @@ export class CreateProductDto {
   @IsString()
   image: string;
 
+  file: Express.Multer.File;
+
   @IsEnum(ProductStatus)
   status: ProductStatus;
 }
