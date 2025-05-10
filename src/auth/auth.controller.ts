@@ -30,7 +30,7 @@ export class AuthController {
     const user = await this.authService.register(registerDto);
     return {
       message: 'User registered successfully',
-      data: user
+      data: user,
     };
   }
 

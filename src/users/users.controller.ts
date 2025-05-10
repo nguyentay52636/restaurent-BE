@@ -18,17 +18,19 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
-  
+
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
-      this.logger.log(`Creating user with data: ${JSON.stringify(createUserDto)}`);
+      this.logger.log(
+        `Creating user with data: ${JSON.stringify(createUserDto)}`,
+      );
       return await this.usersService.create(createUserDto);
     } catch (error) {
       this.logger.error(`Failed to create user: ${error.message}`, error.stack);
-      
+
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
