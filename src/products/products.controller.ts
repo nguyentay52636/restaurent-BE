@@ -27,7 +27,7 @@ export class ProductsController {
     FileInterceptor('file', {
       storage: multer.diskStorage({
         destination: (req, file, cb) => {
-          cb(null, join(process.cwd(), 'uploads'));
+          cb(null, join(process.cwd(), 'public', 'uploads'));
         },
         filename: (req, file, cb) => {
           const uniqueSuffix =
