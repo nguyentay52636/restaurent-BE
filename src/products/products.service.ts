@@ -48,6 +48,7 @@ export class ProductsService {
     const product = this.productRepository.create({
       ...dto,
       category,
+      image: `/uploads/${file.filename}`,
     });
 
     const saved = await this.productRepository.save(product);

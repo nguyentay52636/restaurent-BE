@@ -19,9 +19,14 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { ProductSizesModule } from './product-sizes/product-sizes.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
