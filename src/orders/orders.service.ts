@@ -6,6 +6,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
 import { User } from 'src/users/entities/user.entity';
+import { OrderItemResponseDto } from './dto/order-item-response.dto';
 
 @Injectable()
 export class OrdersService {
@@ -18,10 +19,20 @@ export class OrdersService {
   ) {}
 
   private toResponseDto(order: Order): OrderResponseDto {
+    const orderItems: OrderItemResponseDto[] = order.orderItems?.map(item => ({
+      id: item.id,
+      productId: item.productId,
+      quantity: item.quantity,
+      price: item.price,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    })) || [];
+
     return {
       id: order.id,
       status: order.status,
       userId: order.user.id,
+      orderItems,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
     };
@@ -41,7 +52,9 @@ export class OrdersService {
   }
 
   async findAll(): Promise<OrderResponseDto[]> {
-    const orders = await this.orderRepo.find();
+    const orders = await this.orderRepo.find({
+      relations: ['user', 'orderItems', 'payments', 'review']
+    });
     return orders.map(this.toResponseDto);
   }
 
