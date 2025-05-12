@@ -5,4 +5,4 @@ export class OrderItemResponseDto {
   price: number;
   createdAt: Date;
   updatedAt: Date;
-} 
+}

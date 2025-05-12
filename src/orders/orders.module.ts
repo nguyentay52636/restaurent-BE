@@ -9,7 +9,9 @@ import { Payment } from 'src/payments/entities/payment.entity';
 import { Review } from 'src/reviews/entities/review.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, User, OrderItem, Payment, Review])],
+  imports: [
+    TypeOrmModule.forFeature([Order, User, OrderItem, Payment, Review]),
+  ],
   controllers: [OrdersController],
   providers: [OrdersService],
 })

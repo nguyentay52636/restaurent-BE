@@ -11,7 +11,7 @@ import { OrderItemResponseDto } from './dto/order-item-response.dto';
 @Injectable()
 export class OrdersService {
   constructor(
-    @InjectRepository(Order)
+    @InjectRepository(Order)paymen
     private readonly orderRepo: Repository<Order>,
 
     @InjectRepository(User)
@@ -19,14 +19,15 @@ export class OrdersService {
   ) {}
 
   private toResponseDto(order: Order): OrderResponseDto {
-    const orderItems: OrderItemResponseDto[] = order.orderItems?.map(item => ({
-      id: item.id,
-      productId: item.productId,
-      quantity: item.quantity,
-      price: item.price,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    })) || [];
+    const orderItems: OrderItemResponseDto[] =
+      order.orderItems?.map((item) => ({
+        id: item.orderId,
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      })) || [];
 
     return {
       id: order.id,
@@ -53,7 +54,7 @@ export class OrdersService {
 
   async findAll(): Promise<OrderResponseDto[]> {
     const orders = await this.orderRepo.find({
-      relations: ['user', 'orderItems', 'payments', 'review']
+      relations: ['user', 'orderItems', 'payments', 'review'],
     });
     return orders.map(this.toResponseDto);
   }
