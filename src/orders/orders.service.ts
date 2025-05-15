@@ -11,7 +11,7 @@ import { OrderItemResponseDto } from './dto/order-item-response.dto';
 @Injectable()
 export class OrdersService {
   constructor(
-    @InjectRepository(Order)paymen
+    @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
 
     @InjectRepository(User)
