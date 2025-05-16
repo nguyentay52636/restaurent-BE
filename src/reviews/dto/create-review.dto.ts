@@ -5,6 +5,7 @@ import {
   IsString,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateReviewDto {
@@ -12,7 +13,12 @@ export class CreateReviewDto {
   userId: number;
 
   @IsNumber()
-  orderId: number;
+  @IsOptional()
+  orderId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  productId?: number;
 
   @IsInt()
   @Min(1)
@@ -21,5 +27,5 @@ export class CreateReviewDto {
 
   @IsString()
   @IsNotEmpty()
-  content: string;
+  comment: string;
 }

@@ -17,36 +17,53 @@ export class ReviewsService {
   ) {}
 
   async create(dto: CreateReviewDto) {
-    const existingReview = await this.reviewRepository.findOne({
-      where: {
-        order: { id: dto.orderId },
-      },
-    });
+    if (!dto.orderId && !dto.productId) {
+      throw new BadRequestException('Phải cung cấp orderId hoặc productId');
+    }
 
-    if (existingReview) {
-      throw new BadRequestException('Đơn hàng này đã được đánh giá');
+    if (dto.orderId && dto.productId) {
+      throw new BadRequestException('Không thể cung cấp cả orderId và productId');
+    }
+
+    if (dto.orderId) {
+      const existingReview = await this.reviewRepository.findOne({
+        where: {
+          order: { id: dto.orderId },
+        },
+      });
+
+      if (existingReview) {
+        throw new BadRequestException('Đơn hàng này đã được đánh giá');
+      }
     }
 
     const review = this.reviewRepository.create({
       rating: dto.rating,
-      content: dto.content,
+      comment: dto.comment,
       user: { id: dto.userId },
-      order: { id: dto.orderId },
+      order: dto.orderId ? { id: dto.orderId } : null,
+      product: dto.productId ? { id: dto.productId } : null,
     });
 
-    return this.reviewRepository.save(review);
+    const savedReview = await this.reviewRepository.save(review);
+    
+    // Fetch the complete review with all relations
+    return this.reviewRepository.findOne({
+      where: { id: savedReview.id },
+      relations: ['user', 'order', 'product'],
+    });
   }
 
   async findAll() {
     return this.reviewRepository.find({
-      relations: ['user', 'order'],
+      relations: ['user', 'order', 'product'],
     });
   }
 
   async findOne(id: number) {
     const review = await this.reviewRepository.findOne({
       where: { id },
-      relations: ['user', 'order'],
+      relations: ['user', 'order', 'product'],
     });
     if (!review) throw new NotFoundException('Không tìm thấy đánh giá');
     return review;
@@ -57,10 +74,17 @@ export class ReviewsService {
 
     if (dto.userId) review.user = { id: dto.userId } as any;
     if (dto.orderId) review.order = { id: dto.orderId } as any;
+    if (dto.productId) review.product = { id: dto.productId } as any;
     if (dto.rating !== undefined) review.rating = dto.rating;
-    if (dto.content !== undefined) review.content = dto.content;
+    if (dto.comment !== undefined) review.comment = dto.comment;
 
-    return this.reviewRepository.save(review);
+    await this.reviewRepository.save(review);
+    
+    // Fetch the complete review with all relations after update
+    return this.reviewRepository.findOne({
+      where: { id },
+      relations: ['user', 'order', 'product'],
+    });
   }
 
   async remove(id: number) {
