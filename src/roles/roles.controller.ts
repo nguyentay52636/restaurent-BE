@@ -7,10 +7,13 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { AddPermissionsToRoleDto } from 'src/roles/dto/add-permissions-to-role.dto';
+import { RoleResponseDto } from 'src/roles/dto/role-response.dto';
 
 @Controller('roles')
 export class RolesController {
@@ -19,6 +22,16 @@ export class RolesController {
   @Post()
   async create(@Body() createRoleDto: CreateRoleDto) {
     return await this.rolesService.create(createRoleDto);
+  }
+
+  @Post(':roleId/permissions')
+  async addPermissionsToRole(
+    @Param('roleId') roleId: number,
+    @Query('replace') replace: string,
+    @Body() dto: AddPermissionsToRoleDto,
+  ): Promise<RoleResponseDto> {
+    const shouldReplace = replace === 'true';
+    return this.rolesService.addPermissionsToRole(roleId, dto, shouldReplace);
   }
 
   @Get()
@@ -42,6 +55,8 @@ export class RolesController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.rolesService.remove(id);
-    return { message: `Role with ID ${id} has been deleted.` };
+    return {
+      message: `Role with ID ${id} has been deleted (or reassigned).`,
+    };
   }
 }

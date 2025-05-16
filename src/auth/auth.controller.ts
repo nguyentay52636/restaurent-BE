@@ -36,9 +36,10 @@ export class AuthController {
 
   @Post('refresh')
   async refresh(
-    @Body() body: { refresh_token: string },
-  ): Promise<{ access_token: string }> {
-    return this.authService.refreshToken(body.refresh_token);
+    @Body() body: { refreshToken: string },
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    console.log(body);
+    return this.authService.refreshToken(body.refreshToken);
   }
 
   @Get('profile')

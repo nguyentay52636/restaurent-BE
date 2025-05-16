@@ -50,7 +50,7 @@ export class AuthService {
 
     const payload: JwtPayload = { email: user.email, sub: user.id };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1s' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
 
     return {
@@ -75,16 +75,16 @@ export class AuthService {
   }
 
   async refreshToken(
-    refresh_token: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      const decoded = this.jwtService.verify<JwtPayload>(refresh_token);
+      const decoded = this.jwtService.verify<JwtPayload>(refreshToken);
       const user = await this.findUserByEmailOrThrow(decoded.email);
 
       const payload: JwtPayload = { email: user.email, sub: user.id };
       return {
-        access_token: this.jwtService.sign(payload),
-        refresh_token,
+        accessToken: this.jwtService.sign(payload, { expiresIn: '1s' }),
+        refreshToken,
       };
     } catch (error) {
       throw new UnauthorizedException(error.message || 'Invalid refresh token');

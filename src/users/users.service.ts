@@ -87,7 +87,7 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepo.find();
+    return this.userRepo.find({});
   }
 
   findOne(id: number) {
