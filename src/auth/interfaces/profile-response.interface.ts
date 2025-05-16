@@ -10,6 +10,7 @@ import { Exclude, Expose } from 'class-transformer';
 
 export class ProfileResponse {
   @IsInt()
+  @Expose()
   id: number;
 
   @IsString()
