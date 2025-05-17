@@ -1,5 +1,9 @@
-import { IsEnum, IsDateString, IsNumber } from 'class-validator';
-import { ReservationStatus } from '../entities/reservation.entity';
+import {
+  IsDateString,
+  IsNumber,
+  IsArray,
+  ArrayNotEmpty,
+} from 'class-validator';
 
 export class CreateReservationDto {
   @IsNumber()
@@ -8,6 +12,12 @@ export class CreateReservationDto {
   @IsDateString()
   reservation_time: Date;
 
-  @IsEnum(ReservationStatus)
-  status: ReservationStatus;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
+  tableIds: number[];
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  orderId: number;
 }

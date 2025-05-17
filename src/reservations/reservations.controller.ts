@@ -6,10 +6,12 @@ import {
   Param,
   Delete,
   Put,
+  Patch,
 } from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { ReservationsService } from 'src/reservations/reservations.service';
+import { ReservationsService } from './reservations.service';
+import { UpdateStatusDto } from 'src/reservations/dto/UpdateStatusDto';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -38,5 +40,10 @@ export class ReservationsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.reservationsService.remove(+id);
+  }
+
+  @Patch(':id/status')
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateStatusDto) {
+    return this.reservationsService.updateStatus(+id, dto.status);
   }
 }

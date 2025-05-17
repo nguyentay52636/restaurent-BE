@@ -8,11 +8,13 @@ import {
   OneToMany,
   JoinColumn,
   OneToOne,
+  ManyToMany,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { OrderItem } from 'src/order-items/entities/order-item.entity';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { Review } from 'src/reviews/entities/review.entity';
+import { Reservation } from 'src/reservations/entities/reservation.entity';
 
 @Entity('orders')
 export class Order {
@@ -43,4 +45,7 @@ export class Order {
 
   @OneToOne(() => Review, (review) => review.order)
   review: Review;
+
+  @ManyToMany(() => Reservation, (reservation) => reservation.orders)
+  reservations: Reservation[];
 }

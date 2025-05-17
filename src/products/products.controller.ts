@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -17,11 +18,16 @@ import { ProductResponseDto } from './dto/product-response.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import multer from 'multer';
 import { join } from 'path';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/decorator/permissions.decorator';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions('create:products')
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
@@ -70,6 +76,8 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions('update:products')
   @Patch(':id')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -109,6 +117,8 @@ export class ProductsController {
     return this.productsService.update(id, dto);
   }
 
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions('delete:products')
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.productsService.remove(id);

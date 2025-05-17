@@ -50,7 +50,7 @@ export class AuthService {
 
     const payload: JwtPayload = { email: user.email, sub: user.id };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1s' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
 
     return {
@@ -83,7 +83,7 @@ export class AuthService {
 
       const payload: JwtPayload = { email: user.email, sub: user.id };
       return {
-        accessToken: this.jwtService.sign(payload, { expiresIn: '1s' }),
+        accessToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
         refreshToken,
       };
     } catch (error) {

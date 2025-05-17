@@ -7,27 +7,35 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
 import { OrderItemResponseDto } from './dto/order-item-response.dto';
 import { OrderItemsService } from 'src/order-items/order-items.service';
+import { Permissions } from 'src/permissions/decorator/permissions.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
 
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('order-items')
 export class OrderItemsController {
   constructor(private readonly orderItemsService: OrderItemsService) {}
 
   @Post()
+  @Permissions('create:order-items')
   create(@Body() dto: CreateOrderItemDto): Promise<OrderItemResponseDto> {
     return this.orderItemsService.create(dto);
   }
 
   @Get()
+  @Permissions('read:order-items')
   findAll(): Promise<OrderItemResponseDto[]> {
     return this.orderItemsService.findAll();
   }
 
   @Get('order/:orderId')
+  @Permissions('read:order-items')
   findByOrderId(
     @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<OrderItemResponseDto[]> {
@@ -35,6 +43,7 @@ export class OrderItemsController {
   }
 
   @Get(':orderId/:productId')
+  @Permissions('read:order-items')
   findOne(
     @Param('orderId', ParseIntPipe) orderId: number,
     @Param('productId', ParseIntPipe) productId: number,
@@ -43,6 +52,7 @@ export class OrderItemsController {
   }
 
   @Patch(':orderId/:productId')
+  @Permissions('update:order-items')
   update(
     @Param('orderId', ParseIntPipe) orderId: number,
     @Param('productId', ParseIntPipe) productId: number,
@@ -52,6 +62,7 @@ export class OrderItemsController {
   }
 
   @Delete(':orderId/:productId')
+  @Permissions('delete:order-items')
   remove(
     @Param('orderId', ParseIntPipe) orderId: number,
     @Param('productId', ParseIntPipe) productId: number,

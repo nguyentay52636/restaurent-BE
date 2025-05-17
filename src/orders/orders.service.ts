@@ -54,7 +54,7 @@ export class OrdersService {
 
   async findAll(): Promise<OrderResponseDto[]> {
     const orders = await this.orderRepo.find({
-      relations: ['user', 'orderItems', 'payments', 'review'],
+      relations: ['user', 'orderItems', 'payments'],
     });
     return orders.map(this.toResponseDto);
   }

@@ -21,6 +21,7 @@ import { ProductSizesModule } from './product-sizes/product-sizes.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { TablesModule } from './tables/tables.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { join } from 'path';
     ReviewsModule,
     ReservationsModule,
     ProductSizesModule,
+    TablesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
