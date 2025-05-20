@@ -40,6 +40,13 @@ export class OrdersController {
     return this.ordersService.findOne(id);
   }
 
+  @Get('user/:userId')
+  async getOrdersByUserId(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<OrderResponseDto[]> {
+    return this.ordersService.findByUserId(userId);
+  }
+
   @Patch(':id')
   @Permissions('update:orders')
   update(

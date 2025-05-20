@@ -68,6 +68,14 @@ export class OrdersService {
     return this.toResponseDto(order);
   }
 
+  async findByUserId(userId: number): Promise<OrderResponseDto[]> {
+    const orders = await this.orderRepo.find({
+      where: { user: { id: userId } },
+      relations: ['user', 'orderItems'],
+    });
+    return orders.map(this.toResponseDto);
+  }
+
   async update(id: number, dto: UpdateOrderDto): Promise<OrderResponseDto> {
     const order = await this.orderRepo.findOne({
       where: { id },
