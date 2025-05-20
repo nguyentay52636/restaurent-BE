@@ -23,6 +23,7 @@ export class OrdersService {
       order.orderItems?.map((item) => ({
         id: item.orderId,
         productId: item.productId,
+        product: item.product,
         quantity: item.quantity,
         price: item.price,
         createdAt: item.createdAt,
@@ -71,8 +72,9 @@ export class OrdersService {
   async findByUserId(userId: number): Promise<OrderResponseDto[]> {
     const orders = await this.orderRepo.find({
       where: { user: { id: userId } },
-      relations: ['user', 'orderItems'],
+      relations: ['user', 'orderItems', 'orderItems.product'],
     });
+    console.log(orders);
     return orders.map(this.toResponseDto);
   }
 
