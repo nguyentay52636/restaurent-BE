@@ -87,11 +87,14 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepo.find({});
+    return this.userRepo.find({ relations: ['role', 'role.permissions'] });
   }
 
   findOne(id: number) {
-    return this.userRepo.findOne({ where: { id } });
+    return this.userRepo.findOne({
+      where: { id },
+      relations: ['role', 'role.permissions'],
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
