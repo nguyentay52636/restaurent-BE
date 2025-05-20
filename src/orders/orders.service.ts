@@ -23,7 +23,19 @@ export class OrdersService {
       order.orderItems?.map((item) => ({
         id: item.orderId,
         productId: item.productId,
-        product: item.product,
+        product: item.product ? {
+          id: item.product.id,
+          name: item.product.name,
+          description: item.product.description,
+          price: item.product.price,
+          quantity: item.product.quantity,
+          categoryId: item.product.category?.id,
+          image: item.product.image,
+          product_sizes: item.product.sizes ?? [],
+          status: item.product.status,
+          createdAt: item.product.createdAt,
+          updatedAt: item.product.updatedAt,
+        } : null,
         quantity: item.quantity,
         price: item.price,
         createdAt: item.createdAt,
@@ -55,7 +67,7 @@ export class OrdersService {
 
   async findAll(): Promise<OrderResponseDto[]> {
     const orders = await this.orderRepo.find({
-      relations: ['user', 'orderItems', 'payments'],
+      relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.category', 'orderItems.product.sizes'],
     });
     return orders.map(this.toResponseDto);
   }
