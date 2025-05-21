@@ -6,6 +6,7 @@ import { Order } from 'src/orders/entities/order.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PaymentResponseDto } from './dto/payment-response.dto';
+import { OrderResponseDto } from 'src/orders/dto/order-response.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -18,9 +19,39 @@ export class PaymentsService {
   ) {}
 
   private toResponseDto(payment: Payment): PaymentResponseDto {
+    const orderDto: OrderResponseDto = {
+      id: payment.order.id,
+      status: payment.order.status,
+      userId: payment.order.user.id,
+      orderItems: payment.order.orderItems?.map(item => ({
+        id: item.orderId,
+        productId: item.productId,
+        product: item.product ? {
+          id: item.product.id,
+          name: item.product.name,
+          description: item.product.description,
+          price: item.product.price,
+          quantity: item.product.quantity,
+          categoryId: item.product.category?.id,
+          image: item.product.image,
+          product_sizes: item.product.sizes ?? [],
+          status: item.product.status,
+          createdAt: item.product.createdAt,
+          updatedAt: item.product.updatedAt,
+        } : null,
+        quantity: item.quantity,
+        price: item.price,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      })) || [],
+      createdAt: payment.order.createdAt,
+      updatedAt: payment.order.updatedAt,
+    };
+
     return {
       id: payment.id,
       orderId: payment.order.id,
+      order: orderDto,
       paymentMethod: payment.paymentMethod,
       status: payment.status,
       createdAt: payment.createdAt,
@@ -31,6 +62,7 @@ export class PaymentsService {
   async create(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
     const order = await this.orderRepository.findOne({
       where: { id: dto.orderId },
+      relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.category', 'orderItems.product.sizes'],
     });
     if (!order) throw new NotFoundException('Order not found');
 
@@ -45,7 +77,7 @@ export class PaymentsService {
 
   async findAll(): Promise<PaymentResponseDto[]> {
     const payments = await this.paymentRepository.find({
-      relations: ['order'],
+      relations: ['order', 'order.user', 'order.orderItems', 'order.orderItems.product', 'order.orderItems.product.category', 'order.orderItems.product.sizes'],
     });
     return payments.map(this.toResponseDto);
   }
@@ -53,7 +85,7 @@ export class PaymentsService {
   async findOne(id: number): Promise<PaymentResponseDto> {
     const payment = await this.paymentRepository.findOne({
       where: { id },
-      relations: ['order'],
+      relations: ['order', 'order.user', 'order.orderItems', 'order.orderItems.product', 'order.orderItems.product.category', 'order.orderItems.product.sizes'],
     });
     if (!payment) throw new NotFoundException('Payment not found');
     return this.toResponseDto(payment);
@@ -62,7 +94,7 @@ export class PaymentsService {
   async update(id: number, dto: UpdatePaymentDto): Promise<PaymentResponseDto> {
     const payment = await this.paymentRepository.findOne({
       where: { id },
-      relations: ['order'],
+      relations: ['order', 'order.user', 'order.orderItems', 'order.orderItems.product', 'order.orderItems.product.category', 'order.orderItems.product.sizes'],
     });
     if (!payment) throw new NotFoundException('Payment not found');
 
