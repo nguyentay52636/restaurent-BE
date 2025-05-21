@@ -22,7 +22,17 @@ export class PaymentsService {
     const orderDto: OrderResponseDto = {
       id: payment.order.id,
       status: payment.order.status,
-      userId: payment.order.user.id,
+      user: {
+        id: payment.order.user.id,
+        fullName: payment.order.user.fullName,
+        email: payment.order.user.email,
+        phone: payment.order.user.phone,
+        address: payment.order.user.address,
+        points: payment.order.user.points,
+        roleId: payment.order.user.roleId,
+        createdAt: payment.order.user.createdAt,
+        updatedAt: payment.order.user.updatedAt,
+      },
       orderItems: payment.order.orderItems?.map(item => ({
         id: item.orderId,
         productId: item.productId,

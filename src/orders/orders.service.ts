@@ -45,7 +45,17 @@ export class OrdersService {
     return {
       id: order.id,
       status: order.status,
-      userId: order.user.id,
+      user: {
+        id: order.user.id,
+        fullName: order.user.fullName,
+        email: order.user.email,
+        phone: order.user.phone,
+        address: order.user.address,
+        points: order.user.points,
+        roleId: order.user.roleId,
+        createdAt: order.user.createdAt,
+        updatedAt: order.user.updatedAt,
+      },
       orderItems,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
@@ -75,7 +85,7 @@ export class OrdersService {
   async findOne(id: number): Promise<OrderResponseDto> {
     const order = await this.orderRepo.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.category', 'orderItems.product.sizes'],
     });
     if (!order) throw new NotFoundException('Order not found');
     return this.toResponseDto(order);
@@ -84,16 +94,15 @@ export class OrdersService {
   async findByUserId(userId: number): Promise<OrderResponseDto[]> {
     const orders = await this.orderRepo.find({
       where: { user: { id: userId } },
-      relations: ['user', 'orderItems', 'orderItems.product'],
+      relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.category', 'orderItems.product.sizes'],
     });
-    console.log(orders);
     return orders.map(this.toResponseDto);
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<OrderResponseDto> {
     const order = await this.orderRepo.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'orderItems', 'orderItems.product', 'orderItems.product.category', 'orderItems.product.sizes'],
     });
     if (!order) throw new NotFoundException('Order not found');
 
