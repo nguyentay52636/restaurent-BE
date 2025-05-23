@@ -22,7 +22,9 @@ export class ReviewsService {
     }
 
     if (dto.orderId && dto.productId) {
-      throw new BadRequestException('Không thể cung cấp cả orderId và productId');
+      throw new BadRequestException(
+        'Không thể cung cấp cả orderId và productId',
+      );
     }
 
     if (dto.orderId) {
@@ -46,7 +48,7 @@ export class ReviewsService {
     });
 
     const savedReview = await this.reviewRepository.save(review);
-    
+
     // Fetch the complete review with all relations
     return this.reviewRepository.findOne({
       where: { id: savedReview.id },
@@ -79,7 +81,7 @@ export class ReviewsService {
     if (dto.comment !== undefined) review.comment = dto.comment;
 
     await this.reviewRepository.save(review);
-    
+
     // Fetch the complete review with all relations after update
     return this.reviewRepository.findOne({
       where: { id },

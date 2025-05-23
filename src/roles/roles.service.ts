@@ -80,31 +80,35 @@ export class RolesService {
       throw new BadRequestException('Không thể xóa vai trò mặc định');
     }
 
+    const roleToRemove = await this.roleRepository.findOne({
+      where: { id },
+      relations: ['permissions'],
+    });
+    if (!roleToRemove) {
+      throw new NotFoundException(`Role với ID ${id} không tồn tại`);
+    }
+
+    const defaultRole = await this.roleRepository.findOne({
+      where: { name: 'Người dùng' },
+    });
+    if (!defaultRole) {
+      throw new NotFoundException('Role mặc định "Người dùng" không tồn tại');
+    }
+
+    // ✅ BƯỚC 1: Cập nhật tất cả users có role này ra ngoài transaction
+    await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ role: defaultRole })
+      .where('role_id = :id', { id })
+      .execute();
+
+    // ✅ BƯỚC 2: Thực hiện xoá trong transaction
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const roleToRemove = await queryRunner.manager.findOne(Role, {
-        where: { id },
-        relations: ['permissions'],
-      });
-      if (!roleToRemove)
-        throw new NotFoundException(`Role với ID ${id} không tồn tại`);
-
-      const defaultRole = await queryRunner.manager.findOne(Role, {
-        where: { name: 'Người dùng' },
-      });
-      if (!defaultRole)
-        throw new NotFoundException('Role mặc định "Người dùng" không tồn tại');
-
-      await queryRunner.manager
-        .createQueryBuilder()
-        .update(User)
-        .set({ role: defaultRole })
-        .where('role_id = :id', { id })
-        .execute();
-
       if (roleToRemove.permissions.length > 0) {
         await queryRunner.manager
           .createQueryBuilder()

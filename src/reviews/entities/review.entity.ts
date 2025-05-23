@@ -21,7 +21,10 @@ export class Review {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToOne(() => Order, (order) => order.review, { onDelete: 'CASCADE', nullable: true })
+  @OneToOne(() => Order, (order) => order.review, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn()
   order: Order;
 
